@@ -5,7 +5,6 @@
   "main": "lib/index.js",
   "scripts": {
     "compile": "babel src --out-dir lib",
-    "postinstall": "npm run compile",
     "test": "istanbul cover _mocha"
   },
   "repository": {
