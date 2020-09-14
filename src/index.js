@@ -46,7 +46,7 @@ export default class TwitterTokenStrategy extends OAuthStrategy {
     this._includeEmail = (options.includeEmail !== undefined) ? options.includeEmail : false;
     this._userProfileURL = options.userProfileURL || 'https://api.twitter.com/1.1/account/verify_credentials.json';
     this._includeStatus = (options.includeStatus !== undefined) ? options.includeStatus : true;
-    this._includeEntities = (options.includeEntities !== undefined) ? options.includeEntities : true;    
+    this._includeEntities = (options.includeEntities !== undefined) ? options.includeEntities : true;
   }
 
   /**
@@ -57,9 +57,9 @@ export default class TwitterTokenStrategy extends OAuthStrategy {
     // Following the link back to the application is interpreted as an authentication failure
     if (req.query && req.query.denied) return this.fail();
 
-    let token = (req.body && req.body[this._oauthTokenField]) || (req.query && req.query[this._oauthTokenField]);
-    let tokenSecret = (req.body && req.body[this._oauthTokenSecretField]) || (req.query && req.query[this._oauthTokenSecretField]);
-    let userId = (req.body && req.body[this._userIdField]) || (req.query && req.query[this._userIdField]) || (token && token.split('-')[0]);
+    let token = (options && options[this._oauthTokenField]) || (req.body && req.body[this._oauthTokenField]) || (req.query && req.query[this._oauthTokenField]);
+    let tokenSecret = (options && options[this._oauthTokenSecretField]) || (req.body && req.body[this._oauthTokenSecretField]) || (req.query && req.query[this._oauthTokenSecretField]);
+    let userId = (options && options[this._userIdField]) || (req.body && req.body[this._userIdField]) || (req.query && req.query[this._userIdField]) || (token && token.split('-')[0]);
 
     if (!token) return this.fail({message: `You should provide ${this._oauthTokenField} and ${this._oauthTokenSecretField}`});
 
@@ -90,7 +90,7 @@ export default class TwitterTokenStrategy extends OAuthStrategy {
    */
   userProfile(token, tokenSecret, params, done) {
     const url = uri.parse(this._userProfileURL);
-    
+
     url.query = url.query || {};
     if (url.pathname.indexOf('/users/show.json') == (url.pathname.length - '/users/show.json'.length)) {
       url.query.user_id = params.user_id;
@@ -104,7 +104,7 @@ export default class TwitterTokenStrategy extends OAuthStrategy {
     if (this._includeEntities == false) {
       url.query.include_entities = false;
     }
-    
+
     this._oauth.get(uri.format(url), token, tokenSecret, (error, body, res) => {
       if (error) return done(new InternalOAuthError('Failed to fetch user profile', error));
 
